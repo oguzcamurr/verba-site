@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verba challenge</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { color-scheme: light dark; --bg:#faf6f0; --fg:#1d1a16; --muted:#6b6259; --accent:#c2410c; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16130f; --fg:#f4efe8; --muted:#a89d92; } }
+  body { margin:0; font-family:-apple-system,system-ui,sans-serif; background:var(--bg); color:var(--fg);
+         display:flex; min-height:100vh; align-items:center; justify-content:center; padding:24px; box-sizing:border-box; }
+  main { max-width:420px; text-align:center; }
+  h1 { font-size:28px; margin:0 0 8px; }
+  p { color:var(--muted); line-height:1.45; }
+  a.button { display:block; margin:14px 0; padding:15px; border-radius:14px; text-decoration:none; font-weight:600; }
+  .primary { background:var(--accent); color:#fff; }
+  .secondary { border:1.5px solid var(--accent); color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Verba challenge</h1>
+  <p id="lead">A friend sent you ten words to beat.</p>
+  <a class="button primary" id="open" href="#">Open in Verba</a>
+  <a class="button secondary" id="store" href="https://apps.apple.com/app/id6820494280">Get Verba on the App Store</a>
+  <p id="note">No account needed. Install Verba, then tap "Open in Verba" again.</p>
+</main>
+<script>
+  // Everything stays on this page: the link's query goes straight to the app. No tracking, no cookies.
+  var q = new URLSearchParams(location.search);
+  var ok = /^(en|es|de|fr|tr)$/.test(q.get('l') || '') && /^[ABC][12]$/.test(q.get('v') || '') && /^\d{1,10}$/.test(q.get('s') || '');
+  var app = 'verba://challenge?' + ['l', 'v', 's', 'p'].filter(function (k) { return q.get(k); })
+    .map(function (k) { return k + '=' + encodeURIComponent(q.get(k)); }).join('&');
+  var p = parseInt(q.get('p') || '', 10);
+  if ((navigator.language || '').toLowerCase().indexOf('tr') === 0) {
+    document.documentElement.lang = 'tr';
+    document.getElementById('title').textContent = 'Verba meydan okuması';
+    document.getElementById('lead').textContent = isNaN(p) ? 'Bir arkadaşın sana on kelimelik bir meydan okuma gönderdi.'
+      : 'Arkadaşın 10 kelimede ' + p + ' doğru yaptı. Geçebilir misin?';
+    document.getElementById('open').textContent = "Verba'da aç";
+    document.getElementById('store').textContent = "Verba'yı App Store'dan indir";
+    document.getElementById('note').textContent = 'Hesap gerekmez. Verba yüklü değilse indir, sonra tekrar "Verba\'da aç"a dokun.';
+  } else if (!isNaN(p)) {
+    document.getElementById('lead').textContent = 'Your friend got ' + p + ' of 10. Can you beat that?';
+  }
+  if (ok) {
+    document.getElementById('open').href = app;
+    location.href = app;   // opens Verba right away when it's installed
+  } else {
+    document.getElementById('open').style.display = 'none';
+  }
+</script>
+</body>
+</html>
